@@ -1,1 +1,1796 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SAMSUNG EARNING PLATFORM</title>
 
+  <!-- Social Meta -->
+  <meta property="og:title" content="SAMSUNG EARNING PLATFORM"/>
+  <meta property="og:description" content="Invest in Samsung Packages and Earn Daily"/>
+  <meta property="og:image" content="https://cdn-ai.onspace.ai/onspace/project/screenshot/online/pre-site/9bu5x9.jpg"/>
+  <meta property="og:url" content="https://www.onspace.ai"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="SAMSUNG EARNING PLATFORM"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="SAMSUNG EARNING PLATFORM"/>
+  <meta name="twitter:description" content="Invest in Samsung Packages and Earn Daily"/>
+  <meta name="twitter:image" content="https://cdn-ai.onspace.ai/onspace/project/screenshot/online/pre-site/9bu5x9.jpg"/>
+  <meta name="twitter:url" content="https://www.onspace.ai"/>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+      signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getDatabase, ref, set, get, update, push, onValue, off, remove, serverTimestamp, runTransaction
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAaY2U3vOnByMrjhf4np-DsFvrXCN3Zbbc",
+      authDomain: "samsungearning-78ab1.firebaseapp.com",
+      databaseURL: "https://samsungearning-78ab1-default-rtdb.firebaseio.com",
+      projectId: "samsungearning-78ab1",
+      storageBucket: "samsungearning-78ab1.firebasestorage.app",
+      messagingSenderId: "927792398209",
+      appId: "1:927792398209:web:2cdb7686e68384888df280"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    // ============ GLOBAL STATE ============
+    window._FB = { auth, db, ref, set, get, update, push, onValue, off, remove, serverTimestamp, runTransaction, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile, googleProvider };
+    window._currentUser = null;
+    window._userData = null;
+    window._activeListeners = {};
+
+    // ============ PACKAGES DATA ============
+    window.PACKAGES = [
+      { id:'p1',  name:'Galaxy A05',      price:15000,    daily:3000,     days:60,  group:1,  img:'https://images.samsung.com/is/image/samsung/p6pim/levant/sm-a055fzkdmid/gallery/levant-galaxy-a05-sm-a055fzkdmid-thumb-538182131' },
+      { id:'p2',  name:'Galaxy A15',      price:30000,    daily:7000,     days:60,  group:1,  img:'https://images.samsung.com/is/image/samsung/p6pim/levant/sm-a155fzkdmid/gallery/levant-galaxy-a15-sm-a155fzkdmid-thumb-539432698' },
+      { id:'p3',  name:'Galaxy A25',      price:50000,    daily:12500,    days:180, group:2,  img:'https://images.samsung.com/is/image/samsung/p6pim/levant/sm-a256ezydmid/gallery/levant-galaxy-a25-5g-sm-a256ezydmid-thumb-539432788' },
+      { id:'p4',  name:'Galaxy A35',      price:100000,   daily:26000,    days:180, group:2,  img:'https://images.samsung.com/is/image/samsung/p6pim/levant/sm-a356ezydmid/gallery/levant-galaxy-a35-5g-sm-a356ezydmid-thumb-540016756' },
+      { id:'p5',  name:'Galaxy A55',      price:150000,   daily:40000,    days:180, group:2,  img:'https://images.samsung.com/is/image/samsung/p6pim/levant/sm-a556ezydmid/gallery/levant-galaxy-a55-5g-sm-a556ezydmid-thumb-540016922' },
+      { id:'p6',  name:'Galaxy S23 FE',   price:300000,   daily:90000,    days:210, group:3,  img:'https://images.samsung.com/is/image/samsung/p6pim/levant/sm-s711blbdmid/gallery/levant-galaxy-s23-fe-sm-s711blbdmid-thumb-537998015' },
+      { id:'p7',  name:'Galaxy S24',      price:500000,   daily:160000,   days:210, group:3,  img:'https://images.samsung.com/is/image/samsung/p6pim/levant/sm-s921bzkdmid/gallery/levant-galaxy-s24-sm-s921bzkdmid-thumb-539432418' },
+      { id:'p8',  name:'Galaxy S24+',     price:800000,   daily:280200,   days:210, group:3,  img:'https://images.samsung.com/is/image/samsung/p6pim/levant/sm-s926bzkdmid/gallery/levant-galaxy-s24-plus-sm-s926bzkdmid-thumb-539432538' },
+      { id:'p9',  name:'Galaxy S24 Ultra',price:1200000,  daily:450000,   days:210, group:3,  img:'https://images.samsung.com/is/image/samsung/p6pim/levant/sm-s928bzkhmid/gallery/levant-galaxy-s24-ultra-sm-s928bzkhmid-thumb-539432638' },
+      { id:'p10', name:'Galaxy Z Flip6',  price:1300000,  daily:600000,   days:210, group:3,  img:'https://images.samsung.com/is/image/samsung/p6pim/levant/sm-f741bzadmid/gallery/levant-galaxy-z-flip6-sm-f741bzadmid-thumb-540013498' },
+      { id:'p11', name:'Galaxy Z Fold6 VIP', price:2000000, daily:8805000, days:210,group:3, img:'https://images.samsung.com/is/image/samsung/p6pim/levant/sm-f956bzsdmid/gallery/levant-galaxy-z-fold6-sm-f956bzsdmid-thumb-540013598' },
+    ];
+
+    // ============ HELPERS ============
+    function fmtUGX(n){ return (Math.round(n||0)).toLocaleString()+' UGX'; }
+    function genCode(len=8){ return Math.random().toString(36).substr(2,len).toUpperCase(); }
+    function getReferralLink(code){ return window.location.origin + window.location.pathname + '?ref='+code; }
+    function getReferralFromURL(){
+      const u = new URL(window.location.href);
+      return u.searchParams.get('ref') || null;
+    }
+    window.fmtUGX = fmtUGX;
+    window.genCode = genCode;
+    window.getReferralLink = getReferralLink;
+    window.getReferralFromURL = getReferralFromURL;
+
+    // ============ AUTH STATE ============
+    onAuthStateChanged(auth, async (user) => {
+      // Hide the initial loading screen once Firebase resolves
+      const initScreen = document.getElementById('init-loading');
+      if(initScreen) initScreen.style.display = 'none';
+
+      if(user){
+        window._currentUser = user;
+        await loadUserData(user.uid);
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('app-screen').style.display = 'flex';
+        checkDailyIncome();
+        window.showPage('home');   // use window.showPage — module scope fix
+        startUserListener(user.uid);
+      } else {
+        window._currentUser = null;
+        window._userData = null;
+        stopAllListeners();
+        document.getElementById('auth-screen').style.display = 'flex';
+        document.getElementById('app-screen').style.display = 'none';
+      }
+    });
+
+    async function loadUserData(uid){
+      const snap = await get(ref(db,'users/'+uid));
+      if(snap.exists()){
+        window._userData = snap.val();
+        renderDashboard();
+      }
+    }
+
+    function startUserListener(uid){
+      const r = ref(db,'users/'+uid);
+      const unsub = onValue(r, snap => {
+        if(snap.exists()){
+          window._userData = snap.val();
+          renderDashboard();
+        }
+      });
+      window._activeListeners['user'] = { r, unsub };
+    }
+
+    function stopAllListeners(){
+      Object.values(window._activeListeners).forEach(l => { try{ off(l.r); }catch(e){} });
+      window._activeListeners = {};
+    }
+
+    // ============ REGISTER ============
+    window.doRegister = async function(){
+      const name = document.getElementById('reg-name').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const pass = document.getElementById('reg-pass').value.trim();
+      if(!name||!phone||!pass){ showToast('Fill all fields'); return; }
+      if(pass.length < 6){ showToast('Password min 6 chars'); return; }
+      const email = phone+'@samsung-earn.com';
+      try{
+        showLoader(true);
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        await updateProfile(cred.user, {displayName: name});
+        const uid = cred.user.uid;
+        const code = genCode(8);
+        const refCode = getReferralFromURL();
+        let referredBy = null;
+        if(refCode){
+          const rsSnap = await get(ref(db,'referralCodes/'+refCode));
+          if(rsSnap.exists()) referredBy = rsSnap.val().uid;
+        }
+        const userData = {
+          name, phone, email, uid,
+          wallet: 7000, todayEarnings:0, totalEarnings:0,
+          activeInvestments:0, totalInvestments:0,
+          referralEarnings:0, totalWithdrawals:0,
+          referralCode: code, referredBy: referredBy || null,
+          newUserBonusLocked: true,
+          banned: false, createdAt: Date.now()
+        };
+        await set(ref(db,'users/'+uid), userData);
+        await set(ref(db,'referralCodes/'+code), {uid, name});
+        showLoader(false);
+        showWelcomePopup();
+      } catch(e){
+        showLoader(false);
+        showToast(e.message.replace('Firebase:','').replace('(auth/email-already-in-use).','Phone already registered.').replace('(auth/weak-password).',''));
+      }
+    };
+
+    // ============ LOGIN ============
+    window.doLogin = async function(){
+      const phone = document.getElementById('login-phone').value.trim();
+      const pass = document.getElementById('login-pass').value.trim();
+      if(!phone||!pass){ showToast('Fill all fields'); return; }
+      const email = phone+'@samsung-earn.com';
+      try{
+        showLoader(true);
+        await signInWithEmailAndPassword(auth, email, pass);
+        showLoader(false);
+        showWelcomePopup();
+      } catch(e){
+        showLoader(false);
+        showToast('Invalid phone or password');
+      }
+    };
+
+    // ============ GOOGLE LOGIN ============
+    window.doGoogleLogin = async function(){
+      try{
+        showLoader(true);
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+        const uid = user.uid;
+        const snap = await get(ref(db,'users/'+uid));
+        if(!snap.exists()){
+          const code = genCode(8);
+          const refCode = getReferralFromURL();
+          let referredBy = null;
+          if(refCode){
+            const rsSnap = await get(ref(db,'referralCodes/'+refCode));
+            if(rsSnap.exists()) referredBy = rsSnap.val().uid;
+          }
+          const userData = {
+            name: user.displayName||'User', phone: user.email, email: user.email, uid,
+            wallet:7000, todayEarnings:0, totalEarnings:0,
+            activeInvestments:0, totalInvestments:0,
+            referralEarnings:0, totalWithdrawals:0,
+            referralCode: code, referredBy: referredBy||null,
+            newUserBonusLocked:true, banned:false, createdAt:Date.now()
+          };
+          await set(ref(db,'users/'+uid), userData);
+          await set(ref(db,'referralCodes/'+code), {uid, name:user.displayName||'User'});
+        }
+        showLoader(false);
+        showWelcomePopup();
+      } catch(e){
+        showLoader(false);
+        showToast('Google sign-in failed');
+      }
+    };
+
+    // ============ LOGOUT ============
+    window.doLogout = async function(){
+      await signOut(auth);
+    };
+
+    // ============ DAILY INCOME CHECK ============
+    async function checkDailyIncome(){
+      const uid = window._currentUser?.uid;
+      if(!uid) return;
+      const now = Date.now();
+      const msDay = 86400000;
+      const pkgSnap = await get(ref(db,'packages'));
+      if(!pkgSnap.exists()) return;
+      const pkgs = pkgSnap.val();
+      let totalAdded = 0;
+      for(const [key,pkg] of Object.entries(pkgs)){
+        if(pkg.userId !== uid) continue;
+        if(pkg.status !== 'active') continue;
+        const expiry = pkg.expiryDate;
+        if(now > expiry) continue;
+        const lastPaid = pkg.lastPaidAt || pkg.startDate;
+        if(now - lastPaid < msDay) continue;
+        const daysPending = Math.floor((now - lastPaid) / msDay);
+        const toAdd = pkg.dailyEarning * daysPending;
+        await update(ref(db,'packages/'+key), {lastPaidAt: now});
+        totalAdded += toAdd;
+      }
+      if(totalAdded > 0){
+        const usnap = await get(ref(db,'users/'+uid));
+        if(usnap.exists()){
+          const d = usnap.val();
+          await update(ref(db,'users/'+uid), {
+            wallet: (d.wallet||0)+totalAdded,
+            todayEarnings: (d.todayEarnings||0)+totalAdded,
+            totalEarnings: (d.totalEarnings||0)+totalAdded
+          });
+        }
+      }
+    }
+    window.checkDailyIncome = checkDailyIncome;
+
+    // ============ BUY PACKAGE ============
+    window.submitPayment = async function(pkgId, method, payPhone){
+      const uid = window._currentUser?.uid;
+      const pkg = PACKAGES.find(p=>p.id===pkgId);
+      if(!uid||!pkg) return;
+      const now = Date.now();
+      const expires = now + 15*60*1000;
+      const payRef = push(ref(db,'pendingPayments'));
+      await set(payRef, {
+        userId:uid, userName:window._userData?.name,
+        packageId:pkgId, packageName:pkg.name,
+        amount:pkg.price, dailyEarning:pkg.daily, days:pkg.days,
+        paymentMethod:method, paymentPhone:payPhone,
+        submittedAt:now, expiresAt:expires, status:'pending'
+      });
+      return { key:payRef.key, expires };
+    };
+
+    // ============ ADD WALLET ============
+    window.saveWallet = async function(type, name, phone){
+      const uid = window._currentUser?.uid;
+      if(!uid) return;
+      await update(ref(db,'users/'+uid), {
+        walletType:type, walletName:name, walletPhone:phone
+      });
+      showToast('Wallet saved!');
+    };
+
+    // ============ WITHDRAWAL ============
+    window.requestWithdrawal = async function(amount){
+      const uid = window._currentUser?.uid;
+      const d = window._userData;
+      if(!uid||!d) return false;
+      if(!d.walletPhone){ showToast('Add a wallet first'); return false; }
+      if(amount < 7000){ showToast('Minimum withdrawal: 7,000 UGX'); return false; }
+      if((d.wallet||0) < amount){ showToast('Insufficient balance'); return false; }
+      // Block ALL withdrawals until user has at least one approved package
+      if(!d.hasPurchased){
+        showToast('Buy a package first to unlock withdrawals');
+        return false;
+      }
+      // Check daily limit
+      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+      const wdSnap = await get(ref(db,'withdrawals'));
+      let todayCount = 0;
+      if(wdSnap.exists()){
+        Object.values(wdSnap.val()).forEach(w=>{
+          if(w.userId===uid && w.requestedAt >= todayStart.getTime() && w.status !== 'rejected') todayCount++;
+        });
+      }
+      if(todayCount >= 2){ showToast('Max 2 withdrawals per day'); return false; }
+      const netAmount = Math.round(amount * 0.82);
+      const wdRef = push(ref(db,'withdrawals'));
+      await set(wdRef, {
+        userId:uid, userName:d.name, userPhone:d.phone,
+        walletType:d.walletType, walletPhone:d.walletPhone, walletName:d.walletName,
+        amount, netAmount, status:'pending', requestedAt:Date.now()
+      });
+      showToast('Withdrawal request submitted!');
+      return true;
+    };
+
+    // ============ DAILY CHECK-IN ============
+    window.doCheckIn = async function(){
+      const uid = window._currentUser?.uid;
+      if(!uid) return;
+      const snap = await get(ref(db,'checkins/'+uid));
+      const now = Date.now();
+      const msDay = 86400000;
+      if(snap.exists() && (now - snap.val().lastCheckin) < msDay){
+        const hoursLeft = Math.ceil((msDay - (now - snap.val().lastCheckin)) / 3600000);
+        showToast('Come back in '+hoursLeft+' hours');
+        return;
+      }
+      await set(ref(db,'checkins/'+uid), {lastCheckin: now});
+      const d = window._userData;
+      await update(ref(db,'users/'+uid), {
+        wallet:(d.wallet||0)+100,
+        totalEarnings:(d.totalEarnings||0)+100
+      });
+      showToast('+100 UGX Check-in bonus added!');
+    };
+
+    // ============ GIFT CODE ============
+    window.submitGiftCode = async function(code){
+      const uid = window._currentUser?.uid;
+      if(!uid) return;
+      const windowSnap = await get(ref(db,'redeemWindow'));
+      if(!windowSnap.exists() || !windowSnap.val().active){ showToast('Redeem window is closed'); return; }
+      if(Date.now() > windowSnap.val().expiresAt){ showToast('Redeem window has expired'); return; }
+      const gRef = push(ref(db,'giftCodes'));
+      await set(gRef, { code, userId:uid, userName:window._userData?.name, submittedAt:Date.now(), status:'pending' });
+      showToast('Code submitted! Waiting for admin approval.');
+    };
+
+    // ============ REFERRAL EARNINGS ============
+    window.payReferralCommissions = async function(buyerUid, investAmount){
+      const snap = await get(ref(db,'users/'+buyerUid));
+      if(!snap.exists()) return;
+      const buyer = snap.val();
+      const levels = [
+        {uid: buyer.referredBy, pct:0.30, level:1},
+      ];
+      if(levels[0].uid){
+        const l1snap = await get(ref(db,'users/'+levels[0].uid));
+        if(l1snap.exists()){
+          const l1 = l1snap.val();
+          levels.push({uid: l1.referredBy, pct:0.02, level:2});
+          if(l1.referredBy){
+            const l2snap = await get(ref(db,'users/'+l1.referredBy));
+            if(l2snap.exists()){
+              const l2 = l2snap.val();
+              levels.push({uid: l2.referredBy, pct:0.01, level:3});
+            }
+          }
+        }
+      }
+      for(const lv of levels){
+        if(!lv.uid) continue;
+        const amount = Math.round(investAmount * lv.pct);
+        if(amount <= 0) continue;
+        const usnap = await get(ref(db,'users/'+lv.uid));
+        if(!usnap.exists()) continue;
+        const ud = usnap.val();
+        await update(ref(db,'users/'+lv.uid), {
+          wallet:(ud.wallet||0)+amount,
+          referralEarnings:(ud.referralEarnings||0)+amount,
+          totalEarnings:(ud.totalEarnings||0)+amount
+        });
+        const nRef = push(ref(db,'notifications/'+lv.uid));
+        await set(nRef, { msg:`L${lv.level} referral: +${fmtUGX(amount)} from ${buyer.name}`, at:Date.now() });
+      }
+    };
+
+    // ============ ADMIN FUNCTIONS ============
+    window.adminApprovePayment = async function(key){
+      const snap = await get(ref(db,'pendingPayments/'+key));
+      if(!snap.exists()) return;
+      const pp = snap.val();
+      if(pp.status !== 'pending') return;
+      const uid = pp.userId;
+      const now = Date.now();
+      const expiry = now + pp.days * 86400000;
+      const pkgRef = push(ref(db,'packages'));
+      await set(pkgRef, {
+        userId:uid, userName:pp.userName,
+        packageId:pp.packageId, packageName:pp.packageName,
+        amount:pp.amount, dailyEarning:pp.dailyEarning, days:pp.days,
+        paymentMethod:pp.paymentMethod, paymentPhone:pp.paymentPhone,
+        startDate:now, expiryDate:expiry, lastPaidAt:now,
+        status:'active', approvedAt:now
+      });
+      await update(ref(db,'pendingPayments/'+key), {status:'approved'});
+      const usnap = await get(ref(db,'users/'+uid));
+      if(usnap.exists()){
+        const ud = usnap.val();
+        await update(ref(db,'users/'+uid), {
+          activeInvestments:(ud.activeInvestments||0)+1,
+          totalInvestments:(ud.totalInvestments||0)+1,
+          hasPurchased:true, newUserBonusLocked:false
+        });
+      }
+      await payReferralCommissions(uid, pp.amount);
+      showToast('Package approved!');
+      renderAdminPayments();
+    };
+
+    window.adminRejectPayment = async function(key){
+      await update(ref(db,'pendingPayments/'+key), {status:'rejected'});
+      showToast('Payment rejected.');
+      renderAdminPayments();
+    };
+
+    window.adminDeletePayment = async function(key){
+      await remove(ref(db,'pendingPayments/'+key));
+      renderAdminPayments();
+    };
+
+    window.adminApproveWithdrawal = async function(key){
+      const snap = await get(ref(db,'withdrawals/'+key));
+      if(!snap.exists()) return;
+      const wd = snap.val();
+      if(wd.status !== 'pending') return;
+      const usnap = await get(ref(db,'users/'+wd.userId));
+      if(!usnap.exists()) return;
+      const ud = usnap.val();
+      await update(ref(db,'users/'+wd.userId), {
+        wallet: Math.max(0,(ud.wallet||0)-wd.amount),
+        totalWithdrawals:(ud.totalWithdrawals||0)+wd.netAmount
+      });
+      await update(ref(db,'withdrawals/'+key), {status:'approved', approvedAt:Date.now()});
+      showToast('Withdrawal approved!');
+      renderAdminWithdrawals();
+    };
+
+    window.adminRejectWithdrawal = async function(key){
+      await update(ref(db,'withdrawals/'+key), {status:'rejected'});
+      renderAdminWithdrawals();
+    };
+
+    window.adminDeleteWithdrawal = async function(key){
+      await remove(ref(db,'withdrawals/'+key));
+      renderAdminWithdrawals();
+    };
+
+    window.adminOpenRedeem = async function(){
+      const now = Date.now();
+      const expires = now + 15*60*1000;
+      await set(ref(db,'redeemWindow'), {active:true, expiresAt:expires});
+      showToast('Redeem window opened for 15 minutes!');
+      renderAdminRedeem();
+    };
+
+    window.adminApproveGift = async function(key){
+      const snap = await get(ref(db,'giftCodes/'+key));
+      if(!snap.exists()) return;
+      const gc = snap.val();
+      if(gc.status !== 'pending') return;
+      const usnap = await get(ref(db,'users/'+gc.userId));
+      if(usnap.exists()){
+        const ud = usnap.val();
+        await update(ref(db,'users/'+gc.userId), {
+          wallet:(ud.wallet||0)+200,
+          totalEarnings:(ud.totalEarnings||0)+200
+        });
+      }
+      await update(ref(db,'giftCodes/'+key), {status:'approved'});
+      showToast('Gift code approved! +200 UGX sent.');
+      renderAdminRedeem();
+    };
+
+    window.adminDeleteGift = async function(key){
+      await remove(ref(db,'giftCodes/'+key));
+      renderAdminRedeem();
+    };
+
+    window.adminDeletePackage = async function(key){
+      const snap = await get(ref(db,'packages/'+key));
+      if(snap.exists()){
+        const p = snap.val();
+        const usnap = await get(ref(db,'users/'+p.userId));
+        if(usnap.exists()){
+          const ud = usnap.val();
+          await update(ref(db,'users/'+p.userId), {activeInvestments:Math.max(0,(ud.activeInvestments||0)-1)});
+        }
+      }
+      await remove(ref(db,'packages/'+key));
+      showToast('Package deleted.');
+      renderAdminPackages();
+    };
+
+    window.adminExtendPackage = async function(key){
+      const days = parseInt(prompt('Days to extend?')||'0');
+      if(!days||days<=0) return;
+      const snap = await get(ref(db,'packages/'+key));
+      if(!snap.exists()) return;
+      const p = snap.val();
+      await update(ref(db,'packages/'+key), {expiryDate: p.expiryDate + days*86400000});
+      showToast('Package extended by '+days+' days.');
+      renderAdminPackages();
+    };
+
+    window.adminBanUser = async function(uid){
+      await update(ref(db,'users/'+uid), {banned:true});
+      showToast('User banned.');
+    };
+
+    // ============ RENDER FUNCTIONS ============
+    window.renderDashboard = function(){
+      const d = window._userData;
+      if(!d) return;
+      const els = {
+        'stat-wallet': fmtUGX(d.wallet||0),
+        'stat-today': fmtUGX(d.todayEarnings||0),
+        'stat-total': fmtUGX(d.totalEarnings||0),
+        'stat-active': d.activeInvestments||0,
+        'stat-investments': d.totalInvestments||0,
+        'stat-referral': fmtUGX(d.referralEarnings||0),
+        'stat-withdrawals': fmtUGX(d.totalWithdrawals||0),
+        'home-name': 'Hi, '+(d.name||'User')+'!',
+        'home-wallet': fmtUGX(d.wallet||0),
+        'mine-username': d.name||'User',
+        'mine-phone': d.phone||'',
+        'mine-wallet-display': fmtUGX(d.wallet||0),
+      };
+      Object.entries(els).forEach(([id,val])=>{
+        const el = document.getElementById(id);
+        if(el) el.textContent = val;
+      });
+      const rlEl = document.getElementById('referral-link');
+      if(rlEl && d.referralCode) rlEl.value = getReferralLink(d.referralCode);
+      // Refresh withdrawal lock banner whenever user data updates
+      if(window.populateWalletWithdraw) window.populateWalletWithdraw();
+    };
+
+    window.renderMyProducts = async function(){
+      const uid = window._currentUser?.uid;
+      if(!uid) return;
+      const cont = document.getElementById('my-products-list');
+      if(!cont) return;
+      cont.innerHTML = '<div class="text-center py-8 text-gray-400">Loading...</div>';
+      const snap = await get(ref(db,'packages'));
+      const now = Date.now();
+      let html = '';
+      if(snap.exists()){
+        const pkgs = Object.entries(snap.val()).filter(([k,p])=>p.userId===uid);
+        if(pkgs.length===0) html = '<div class="text-center py-8 text-gray-400">No packages yet. Buy one!</div>';
+        else pkgs.forEach(([key,p])=>{
+          const daysLeft = Math.max(0, Math.ceil((p.expiryDate - now)/86400000));
+          const statusColor = p.status==='active' ? 'text-green-400' : 'text-gray-400';
+          const pkg = PACKAGES.find(x=>x.id===p.packageId)||{};
+          html += `<div class="card mb-3 p-4 rounded-xl border border-blue-900/30">
+            <div class="flex items-center gap-3 mb-3">
+              <img src="${pkg.img||''}" class="w-14 h-14 object-contain rounded-lg bg-blue-950" alt="${p.packageName}" onerror="this.src='https://placehold.co/56x56/1428A0/white?text=S'" />
+              <div>
+                <div class="font-bold text-white">${p.packageName}</div>
+                <div class="${statusColor} text-xs font-semibold uppercase">${p.status}</div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="bg-blue-950/50 rounded-lg p-2"><div class="text-gray-400">Daily Earn</div><div class="text-green-400 font-bold">${fmtUGX(p.dailyEarning)}</div></div>
+              <div class="bg-blue-950/50 rounded-lg p-2"><div class="text-gray-400">Days Left</div><div class="text-blue-300 font-bold">${daysLeft} days</div></div>
+              <div class="bg-blue-950/50 rounded-lg p-2"><div class="text-gray-400">Buy Date</div><div class="text-gray-200">${new Date(p.startDate).toLocaleDateString()}</div></div>
+              <div class="bg-blue-950/50 rounded-lg p-2"><div class="text-gray-400">Expiry</div><div class="text-gray-200">${new Date(p.expiryDate).toLocaleDateString()}</div></div>
+            </div>
+          </div>`;
+        });
+      } else { html = '<div class="text-center py-8 text-gray-400">No packages yet.</div>'; }
+      cont.innerHTML = html;
+    };
+
+    window.renderWithdrawalHistory = async function(){
+      const uid = window._currentUser?.uid;
+      if(!uid) return;
+      const cont = document.getElementById('wd-history-list');
+      if(!cont) return;
+      const snap = await get(ref(db,'withdrawals'));
+      let html = '';
+      if(snap.exists()){
+        const list = Object.entries(snap.val()).filter(([k,w])=>w.userId===uid).reverse();
+        if(list.length===0) html = '<div class="text-center py-4 text-gray-400 text-sm">No withdrawals yet.</div>';
+        else list.forEach(([k,w])=>{
+          const sc = w.status==='approved'?'text-green-400':w.status==='rejected'?'text-red-400':'text-yellow-400';
+          html += `<div class="flex items-center justify-between py-3 border-b border-blue-900/20">
+            <div><div class="text-white text-sm font-semibold">${fmtUGX(w.amount)}</div><div class="text-gray-400 text-xs">${new Date(w.requestedAt).toLocaleString()}</div></div>
+            <div class="${sc} text-xs font-bold uppercase">${w.status}</div>
+          </div>`;
+        });
+      } else { html = '<div class="text-center py-4 text-gray-400 text-sm">No withdrawals yet.</div>'; }
+      cont.innerHTML = html;
+    };
+
+    window.renderTeam = async function(){
+      const uid = window._currentUser?.uid;
+      const d = window._userData;
+      if(!uid||!d) return;
+      // Count direct referrals
+      const snap = await get(ref(db,'users'));
+      let l1=0, l2=0, l3=0;
+      let l1list = [];
+      if(snap.exists()){
+        const all = snap.val();
+        Object.entries(all).forEach(([k,u])=>{ if(u.referredBy===uid){ l1++; l1list.push(k); } });
+        l1list.forEach(l1uid=>{
+          Object.entries(all).forEach(([k,u])=>{ if(u.referredBy===l1uid){ l2++; } });
+        });
+      }
+      const el = document.getElementById('team-stats');
+      if(el) el.innerHTML = `
+        <div class="grid grid-cols-3 gap-3 mb-4">
+          <div class="card p-3 text-center rounded-xl"><div class="text-2xl font-black text-blue-400">${l1}</div><div class="text-xs text-gray-400">L1 Direct</div><div class="text-xs text-green-400">30%</div></div>
+          <div class="card p-3 text-center rounded-xl"><div class="text-2xl font-black text-blue-400">${l2}</div><div class="text-xs text-gray-400">L2 Team</div><div class="text-xs text-green-400">2%</div></div>
+          <div class="card p-3 text-center rounded-xl"><div class="text-2xl font-black text-blue-400">${l3}</div><div class="text-xs text-gray-400">L3 Team</div><div class="text-xs text-green-400">1%</div></div>
+        </div>
+        <div class="card p-4 rounded-xl mb-3">
+          <div class="text-gray-400 text-xs mb-1">Total Referral Earnings</div>
+          <div class="text-green-400 text-2xl font-black">${fmtUGX(d.referralEarnings||0)}</div>
+        </div>`;
+    };
+
+    window.renderAdminPayments = async function(){
+      const cont = document.getElementById('admin-payments-list');
+      if(!cont) return;
+      const snap = await get(ref(db,'pendingPayments'));
+      let html = '';
+      if(snap.exists()){
+        const list = Object.entries(snap.val()).filter(([k,p])=>p.status==='pending').reverse();
+        if(list.length===0) html = '<div class="text-center py-4 text-gray-400 text-sm">No pending payments.</div>';
+        else list.forEach(([key,p])=>{
+          const methodIcon = p.paymentMethod==='MTN'?'🟡':'🔴';
+          html += `<div class="card mb-3 p-4 rounded-xl border border-yellow-700/30">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <div class="font-bold text-white">${p.userName}</div>
+                <div class="text-xs text-gray-400">${p.packageName} — ${fmtUGX(p.amount)}</div>
+              </div>
+              <span class="text-xs bg-yellow-900/50 text-yellow-400 px-2 py-1 rounded-full">Pending</span>
+            </div>
+            <div class="bg-blue-950/50 rounded-lg p-3 mb-3">
+              <div class="text-xs text-gray-400 mb-1">Customer Payment Number</div>
+              <div class="text-white font-bold">${methodIcon} ${p.paymentMethod}: ${p.paymentPhone}</div>
+            </div>
+            <div class="text-xs text-gray-400 mb-3">Submitted: ${new Date(p.submittedAt).toLocaleString()}</div>
+            <div class="flex gap-2">
+              <button onclick="adminApprovePayment('${key}')" class="flex-1 bg-green-600 hover:bg-green-500 text-white text-sm py-2 rounded-lg font-semibold">✓ Approve</button>
+              <button onclick="adminRejectPayment('${key}')" class="flex-1 bg-red-700 hover:bg-red-600 text-white text-sm py-2 rounded-lg font-semibold">✗ Reject</button>
+              <button onclick="adminDeletePayment('${key}')" class="bg-gray-700 hover:bg-gray-600 text-white text-sm px-3 py-2 rounded-lg">🗑</button>
+            </div>
+          </div>`;
+        });
+      } else { html = '<div class="text-center py-4 text-gray-400 text-sm">No pending payments.</div>'; }
+      cont.innerHTML = html;
+    };
+
+    window.renderAdminWithdrawals = async function(){
+      const cont = document.getElementById('admin-wd-list');
+      if(!cont) return;
+      const snap = await get(ref(db,'withdrawals'));
+      let html = '';
+      if(snap.exists()){
+        const list = Object.entries(snap.val()).filter(([k,w])=>w.status==='pending').reverse();
+        if(list.length===0) html = '<div class="text-center py-4 text-gray-400 text-sm">No pending withdrawals.</div>';
+        else list.forEach(([key,w])=>{
+          html += `<div class="card mb-3 p-4 rounded-xl border border-blue-700/30">
+            <div class="flex justify-between items-start mb-2">
+              <div><div class="font-bold text-white">${w.userName}</div><div class="text-xs text-gray-400">${w.userPhone}</div></div>
+              <span class="text-xs bg-blue-900/50 text-blue-400 px-2 py-1 rounded-full">Pending</span>
+            </div>
+            <div class="bg-blue-950/50 rounded-lg p-3 mb-3">
+              <div class="text-xs text-gray-400 mb-1">Send To</div>
+              <div class="text-white font-bold">${w.walletType}: ${w.walletPhone}</div>
+              <div class="text-gray-300 text-sm">${w.walletName||''}</div>
+            </div>
+            <div class="flex justify-between mb-3 text-sm">
+              <div><span class="text-gray-400">Requested: </span><span class="text-white font-bold">${fmtUGX(w.amount)}</span></div>
+              <div><span class="text-gray-400">Send: </span><span class="text-green-400 font-bold">${fmtUGX(w.netAmount)}</span></div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="adminApproveWithdrawal('${key}')" class="flex-1 bg-green-600 hover:bg-green-500 text-white text-sm py-2 rounded-lg font-semibold">✓ Approve</button>
+              <button onclick="adminRejectWithdrawal('${key}')" class="flex-1 bg-red-700 hover:bg-red-600 text-white text-sm py-2 rounded-lg font-semibold">✗ Reject</button>
+              <button onclick="adminDeleteWithdrawal('${key}')" class="bg-gray-700 hover:bg-gray-600 text-white text-sm px-3 py-2 rounded-lg">🗑</button>
+            </div>
+          </div>`;
+        });
+      } else { html = '<div class="text-center py-4 text-gray-400 text-sm">No pending withdrawals.</div>'; }
+      cont.innerHTML = html;
+    };
+
+    window.renderAdminRedeem = async function(){
+      const cont = document.getElementById('admin-redeem-list');
+      if(!cont) return;
+      const snap = await get(ref(db,'giftCodes'));
+      const wSnap = await get(ref(db,'redeemWindow'));
+      const now = Date.now();
+      let windowInfo = '<div class="text-gray-400 text-sm mb-3">Redeem window: <span class="text-red-400 font-bold">CLOSED</span></div>';
+      if(wSnap.exists() && wSnap.val().active && now < wSnap.val().expiresAt){
+        const secsLeft = Math.ceil((wSnap.val().expiresAt - now)/1000);
+        windowInfo = `<div class="text-gray-400 text-sm mb-3">Redeem window: <span class="text-green-400 font-bold">OPEN — ${Math.floor(secsLeft/60)}:${String(secsLeft%60).padStart(2,'0')}</span></div>`;
+      }
+      let html = windowInfo;
+      if(snap.exists()){
+        const list = Object.entries(snap.val()).filter(([k,g])=>g.status==='pending').reverse();
+        if(list.length>0) list.forEach(([key,g])=>{
+          html += `<div class="card mb-2 p-3 rounded-xl flex items-center justify-between">
+            <div><div class="text-white text-sm font-bold">${g.userName}</div><div class="text-gray-400 text-xs">Code: ${g.code}</div></div>
+            <div class="flex gap-2">
+              <button onclick="adminApproveGift('${key}')" class="bg-green-600 text-white text-xs px-3 py-1.5 rounded-lg">True</button>
+              <button onclick="adminDeleteGift('${key}')" class="bg-gray-700 text-white text-xs px-2 py-1.5 rounded-lg">🗑</button>
+            </div>
+          </div>`;
+        });
+        else html += '<div class="text-gray-400 text-sm">No pending codes.</div>';
+      }
+      cont.innerHTML = html;
+    };
+
+    window.renderAdminPackages = async function(){
+      const cont = document.getElementById('admin-packages-list');
+      if(!cont) return;
+      const snap = await get(ref(db,'packages'));
+      let html = '';
+      if(snap.exists()){
+        const list = Object.entries(snap.val()).reverse();
+        if(list.length===0) html = '<div class="text-center py-4 text-gray-400 text-sm">No packages.</div>';
+        else list.forEach(([key,p])=>{
+          const daysLeft = Math.max(0,Math.ceil((p.expiryDate-Date.now())/86400000));
+          html += `<div class="card mb-2 p-3 rounded-xl">
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="text-white text-sm font-bold">${p.userName}</div>
+                <div class="text-gray-400 text-xs">${p.packageName} • ${daysLeft}d left • <span class="${p.status==='active'?'text-green-400':'text-gray-400'}">${p.status}</span></div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="adminExtendPackage('${key}')" class="bg-blue-700 text-white text-xs px-2 py-1.5 rounded-lg">+Days</button>
+                <button onclick="adminDeletePackage('${key}')" class="bg-red-700 text-white text-xs px-2 py-1.5 rounded-lg">🗑</button>
+              </div>
+            </div>
+          </div>`;
+        });
+      } else { html = '<div class="text-center py-4 text-gray-400 text-sm">No packages.</div>'; }
+      cont.innerHTML = html;
+    };
+
+    window.renderAdminUsers = async function(){
+      const cont = document.getElementById('admin-users-list');
+      if(!cont) return;
+      const snap = await get(ref(db,'users'));
+      let html = '';
+      if(snap.exists()){
+        const list = Object.entries(snap.val()).reverse();
+        list.forEach(([uid,u])=>{
+          html += `<div class="card mb-2 p-3 rounded-xl flex items-center justify-between">
+            <div>
+              <div class="text-white text-sm font-bold">${u.name}</div>
+              <div class="text-gray-400 text-xs">${u.phone} • ${fmtUGX(u.wallet||0)}</div>
+            </div>
+            <button onclick="adminBanUser('${uid}')" class="bg-red-800 text-white text-xs px-3 py-1.5 rounded-lg">Ban</button>
+          </div>`;
+        });
+      }
+      cont.innerHTML = html||'<div class="text-gray-400 text-sm">No users.</div>';
+    };
+
+    console.log('Firebase module loaded.');
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #030d1f;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .card { background: rgba(20,40,160,0.1); border: 1px solid rgba(20,40,160,0.25); }
+    .btn-primary { background: linear-gradient(135deg,#1428A0,#0d5cda); color:#fff; font-weight:700; border:none; cursor:pointer; transition: all 0.2s; }
+    .btn-primary:hover { filter:brightness(1.15); transform:translateY(-1px); }
+    .btn-primary:active { transform:translateY(0); }
+    .gradient-header { background: linear-gradient(135deg, #1428A0 0%, #0a1966 50%, #030d1f 100%); }
+    .page { display:none; flex-direction:column; overflow-y:auto; flex:1; }
+    .page.active { display:flex; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #030d1f; }
+    ::-webkit-scrollbar-thumb { background: #1428A0; border-radius:4px; }
+    .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px 0; cursor:pointer; transition:color 0.2s; color:#4a5568; font-size:10px; gap:3px; border:none; background:none; }
+    .nav-btn.active { color:#1d6af5; }
+    .nav-btn i { font-size:18px; }
+    .stat-card { background:linear-gradient(135deg,rgba(20,40,160,0.25),rgba(13,92,218,0.1)); border:1px solid rgba(29,106,245,0.3); border-radius:16px; }
+    .package-card { background:linear-gradient(135deg,rgba(20,40,160,0.2),rgba(3,13,31,0.8)); border:1px solid rgba(29,106,245,0.25); border-radius:20px; overflow:hidden; }
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:1000; display:flex; align-items:center; justify-content:center; padding:16px; }
+    .modal-box { background:linear-gradient(135deg,#0d1a4a,#030d1f); border:1px solid rgba(20,40,160,0.5); border-radius:24px; width:100%; max-width:400px; max-height:90vh; overflow-y:auto; padding:28px 24px; }
+    .input-field { background:rgba(20,40,160,0.12); border:1px solid rgba(29,106,245,0.3); border-radius:12px; padding:14px 16px; color:#fff; width:100%; font-size:15px; outline:none; transition:border-color 0.2s; }
+    .input-field:focus { border-color:#1d6af5; }
+    .input-field::placeholder { color:#4a5568; }
+    .select-field { background:rgba(20,40,160,0.12); border:1px solid rgba(29,106,245,0.3); border-radius:12px; padding:14px 16px; color:#fff; width:100%; font-size:15px; outline:none; appearance:none; }
+    .select-field option { background:#0d1a4a; }
+    .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:rgba(20,40,160,0.95); border:1px solid #1d6af5; border-radius:12px; padding:12px 24px; font-size:14px; font-weight:600; z-index:9999; white-space:nowrap; max-width:90vw; text-align:center; pointer-events:none; opacity:0; transition:opacity 0.3s; }
+    .toast.show { opacity:1; }
+    .admin-tab { flex:1; padding:8px; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer; text-align:center; transition:all 0.2s; border:none; }
+    .loader-overlay { position:fixed; inset:0; background:rgba(3,13,31,0.85); z-index:2000; display:none; align-items:center; justify-content:center; }
+    .loader-overlay.show { display:flex; }
+    .spinner { width:44px;height:44px;border:4px solid rgba(29,106,245,0.2);border-top-color:#1d6af5;border-radius:50%;animation:spin 0.8s linear infinite; }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .group-badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:800; }
+    .group-1 { background:rgba(34,197,94,0.2); color:#22c55e; border:1px solid rgba(34,197,94,0.3); }
+    .group-2 { background:rgba(59,130,246,0.2); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+    .group-3 { background:rgba(168,85,247,0.2); color:#c084fc; border:1px solid rgba(168,85,247,0.3); }
+    .tab-btn { padding:8px 16px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; border:none; }
+    .tab-btn.active { background:#1428A0; color:#fff; }
+    .tab-btn:not(.active) { background:rgba(20,40,160,0.15); color:#94a3b8; }
+  </style>
+
+  <script>
+    // UI helpers
+    window.showToast = function(msg, duration=3000){
+      let t = document.getElementById('toast');
+      if(!t){ t=document.createElement('div'); t.id='toast'; t.className='toast'; document.body.appendChild(t); }
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'), duration);
+    };
+    window.showLoader = function(v){
+      const el = document.getElementById('loader-overlay');
+      if(el) el.classList.toggle('show', v);
+    };
+    window.showPage = function(page){
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      const el = document.getElementById('page-'+page);
+      if(el) el.classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+      const nb = document.querySelector(`.nav-btn[data-page="${page}"]`);
+      if(nb) nb.classList.add('active');
+      // Use window.* to access functions defined in the Firebase module
+      if(page==='products') window.renderPackages && window.renderPackages();
+      if(page==='myproducts') window.renderMyProducts && window.renderMyProducts();
+      if(page==='team') window.renderTeam && window.renderTeam();
+      if(page==='withdraw'){ window.renderWithdrawalHistory && window.renderWithdrawalHistory(); window.populateWalletWithdraw && window.populateWalletWithdraw(); }
+      if(page==='mine') window.renderMineRedeemStatus && window.renderMineRedeemStatus();
+    };
+    window.showModal = function(id){ const m=document.getElementById(id); if(m) m.style.display='flex'; };
+    window.hideModal = function(id){ const m=document.getElementById(id); if(m) m.style.display='none'; };
+    window.showAuthTab = function(tab){
+      document.getElementById('login-form').style.display = tab==='login'?'block':'none';
+      document.getElementById('register-form').style.display = tab==='register'?'block':'none';
+      document.getElementById('auth-tab-login').classList.toggle('active', tab==='login');
+      document.getElementById('auth-tab-reg').classList.toggle('active', tab==='register');
+    };
+  </script>
+</head>
+<body class="overflow-hidden" style="height:100vh; display:flex; flex-direction:column;">
+
+<!-- ============ INITIAL LOADING SCREEN ============ -->
+<div id="init-loading" style="position:fixed;inset:0;background:#030d1f;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;">
+  <div style="width:64px;height:64px;background:linear-gradient(135deg,#1428A0,#0d5cda);border-radius:16px;display:flex;align-items:center;justify-content:center;">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+  </div>
+  <div style="text-align:center;">
+    <div style="color:#fff;font-weight:900;font-size:18px;letter-spacing:2px;">SAMSUNG</div>
+    <div style="color:#1d6af5;font-weight:700;font-size:12px;letter-spacing:4px;margin-top:2px;">EARNING PLATFORM</div>
+  </div>
+  <div class="spinner" style="width:36px;height:36px;border:3px solid rgba(29,106,245,0.2);border-top-color:#1d6af5;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+</div>
+
+<!-- LOADER -->
+<div id="loader-overlay" class="loader-overlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- ============ AUTH SCREEN ============ -->
+<div id="auth-screen" style="display:none; flex-direction:column; min-height:100vh; overflow-y:auto;">
+  <!-- Header -->
+  <div class="gradient-header pt-12 pb-10 px-6 text-center relative overflow-hidden">
+    <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,rgba(29,106,245,0.3),transparent 60%);pointer-events:none;"></div>
+    <div style="width:64px;height:64px;background:linear-gradient(135deg,#1428A0,#0d5cda);border-radius:16px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <h1 class="text-2xl font-black tracking-tight" style="color:#fff;">SAMSUNG</h1>
+    <p class="text-blue-400 font-bold text-sm tracking-widest mt-1">EARNING PLATFORM</p>
+    <p class="text-gray-400 text-xs mt-2">Invest Smart. Earn Daily.</p>
+  </div>
+
+  <!-- Auth Card -->
+  <div class="flex-1 px-5 py-6 max-w-md mx-auto w-full">
+    <!-- Tabs -->
+    <div class="flex bg-blue-950/30 rounded-2xl p-1 mb-6">
+      <button id="auth-tab-login" class="tab-btn active flex-1" onclick="showAuthTab(&#39;login&#39;)">Login</button>
+      <button id="auth-tab-reg" class="tab-btn flex-1" onclick="showAuthTab(&#39;register&#39;)">Register</button>
+    </div>
+
+    <!-- Login -->
+    <div id="login-form">
+      <div class="mb-4">
+        <label class="text-xs text-gray-400 font-semibold mb-2 block">Phone Number</label>
+        <input id="login-phone" type="tel" placeholder="07XXXXXXXX" class="input-field"/>
+      </div>
+      <div class="mb-6">
+        <label class="text-xs text-gray-400 font-semibold mb-2 block">Password</label>
+        <input id="login-pass" type="password" placeholder="Your password" class="input-field"/>
+      </div>
+      <button onclick="doLogin()" class="btn-primary w-full py-4 rounded-2xl text-base mb-4">Login</button>
+      <button onclick="doGoogleLogin()" class="w-full py-4 rounded-2xl border border-blue-800 text-gray-300 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-blue-950/30 transition-all">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path></svg>
+        Continue with Google
+      </button>
+    </div>
+
+    <!-- Register -->
+    <div id="register-form" style="display:none;">
+      <div class="mb-4">
+        <label class="text-xs text-gray-400 font-semibold mb-2 block">Full Name</label>
+        <input id="reg-name" type="text" placeholder="Your full name" class="input-field"/>
+      </div>
+      <div class="mb-4">
+        <label class="text-xs text-gray-400 font-semibold mb-2 block">Phone Number</label>
+        <input id="reg-phone" type="tel" placeholder="07XXXXXXXX" class="input-field"/>
+      </div>
+      <div class="mb-2">
+        <label class="text-xs text-gray-400 font-semibold mb-2 block">Create Password</label>
+        <input id="reg-pass" type="password" placeholder="Create a password you will remember" class="input-field"/>
+      </div>
+      <p class="text-xs text-gray-500 mb-6">Create a password you will be able to remember</p>
+      <button onclick="doRegister()" class="btn-primary w-full py-4 rounded-2xl text-base mb-4">Create Account</button>
+      <button onclick="doGoogleLogin()" class="w-full py-4 rounded-2xl border border-blue-800 text-gray-300 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-blue-950/30 transition-all">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path></svg>
+        Continue with Google
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP SCREEN ============ -->
+<div id="app-screen" style="display:none; flex-direction:column; height:100vh; overflow:hidden;">
+
+  <!-- Pages Container -->
+  <div style="flex:1; overflow:hidden; position:relative; display:flex; flex-direction:column;">
+
+    <!-- ===== HOME PAGE ===== -->
+    <div id="page-home" class="page active" style="overflow-y:auto; padding-bottom:80px;">
+      <!-- Header -->
+      <div class="gradient-header px-5 pt-10 pb-6 relative overflow-hidden">
+        <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(29,106,245,0.25),transparent);pointer-events:none;border-radius:50%;"></div>
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-gray-400 text-sm">Welcome back</p>
+            <h2 id="home-name" class="text-xl font-black text-white mt-0.5">Hi, User!</h2>
+          </div>
+          <!-- Flower/Admin Icon -->
+          <button onclick="showAdminLogin()" class="w-10 h-10 flex items-center justify-center rounded-full opacity-20 hover:opacity-60 transition-opacity">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="text-white"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"></path><path d="M12 2c.55 0 1 .45 1 1v1.07A7.003 7.003 0 0119.93 11H21c.55 0 1 .45 1 1s-.45 1-1 1h-1.07A7.003 7.003 0 0113 19.93V21c0 .55-.45 1-1 1s-1-.45-1-1v-1.07A7.003 7.003 0 014.07 13H3c-.55 0-1-.45-1-1s.45-1 1-1h1.07A7.003 7.003 0 0111 4.07V3c0-.55.45-1 1-1z"></path></svg>
+          </button>
+        </div>
+        <!-- Wallet Balance -->
+        <div class="mt-4 bg-white/5 backdrop-blur rounded-2xl p-4 border border-white/10">
+          <p class="text-gray-400 text-xs font-semibold tracking-wider uppercase">Wallet Balance</p>
+          <div id="home-wallet" class="text-3xl font-black text-white mt-1">0 UGX</div>
+          <div class="flex gap-3 mt-3">
+            <button onclick="showPage(&#39;withdraw&#39;)" class="flex-1 bg-green-600 hover:bg-green-500 text-white text-sm font-bold py-2.5 rounded-xl transition-all">Withdraw</button>
+            <button onclick="showPage(&#39;products&#39;)" class="flex-1 btn-primary text-sm font-bold py-2.5 rounded-xl">Buy Package</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="px-4 py-4">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="stat-card p-4">
+            <p class="text-gray-400 text-xs font-semibold">Today Earnings</p>
+            <p id="stat-today" class="text-green-400 font-black text-lg mt-1">0 UGX</p>
+          </div>
+          <div class="stat-card p-4">
+            <p class="text-gray-400 text-xs font-semibold">Total Earnings</p>
+            <p id="stat-total" class="text-blue-400 font-black text-lg mt-1">0 UGX</p>
+          </div>
+          <div class="stat-card p-4">
+            <p class="text-gray-400 text-xs font-semibold">Active Packages</p>
+            <p id="stat-active" class="text-purple-400 font-black text-lg mt-1">0</p>
+          </div>
+          <div class="stat-card p-4">
+            <p class="text-gray-400 text-xs font-semibold">Total Investments</p>
+            <p id="stat-investments" class="text-yellow-400 font-black text-lg mt-1">0</p>
+          </div>
+          <div class="stat-card p-4">
+            <p class="text-gray-400 text-xs font-semibold">Referral Earnings</p>
+            <p id="stat-referral" class="text-pink-400 font-black text-lg mt-1">0 UGX</p>
+          </div>
+          <div class="stat-card p-4">
+            <p class="text-gray-400 text-xs font-semibold">Total Withdrawals</p>
+            <p id="stat-withdrawals" class="text-teal-400 font-black text-lg mt-1">0 UGX</p>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mt-4">
+          <h3 class="text-white font-bold text-sm mb-3">Quick Actions</h3>
+          <div class="grid grid-cols-3 gap-3">
+            <button onclick="showPage(&#39;products&#39;)" class="card p-3 rounded-xl text-center hover:border-blue-500 transition-all">
+              <div class="text-2xl mb-1">📦</div>
+              <div class="text-xs text-gray-300 font-semibold">Buy Package</div>
+            </button>
+            <button onclick="showPage(&#39;myproducts&#39;)" class="card p-3 rounded-xl text-center hover:border-blue-500 transition-all">
+              <div class="text-2xl mb-1">📱</div>
+              <div class="text-xs text-gray-300 font-semibold">My Products</div>
+            </button>
+            <button onclick="showPage(&#39;withdraw&#39;)" class="card p-3 rounded-xl text-center hover:border-blue-500 transition-all">
+              <div class="text-2xl mb-1">💸</div>
+              <div class="text-xs text-gray-300 font-semibold">Withdraw</div>
+            </button>
+            <button onclick="showAddWallet()" class="card p-3 rounded-xl text-center hover:border-blue-500 transition-all">
+              <div class="text-2xl mb-1">👛</div>
+              <div class="text-xs text-gray-300 font-semibold">Add Wallet</div>
+            </button>
+            <button onclick="showPage(&#39;team&#39;)" class="card p-3 rounded-xl text-center hover:border-blue-500 transition-all">
+              <div class="text-2xl mb-1">👥</div>
+              <div class="text-xs text-gray-300 font-semibold">My Team</div>
+            </button>
+            <a href="https://t.me/+adk1usHyKF4yYzQ0" target="_blank" class="card p-3 rounded-xl text-center hover:border-blue-500 transition-all block">
+              <div class="text-2xl mb-1">💬</div>
+              <div class="text-xs text-gray-300 font-semibold">Support</div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Notice -->
+        <div class="mt-4 bg-blue-950/40 border border-blue-800/40 rounded-xl p-4">
+          <div class="flex items-start gap-3">
+            <span class="text-yellow-400 text-xl mt-0.5">⚠️</span>
+            <div>
+              <p class="text-yellow-400 text-sm font-bold">Important Notice</p>
+              <p class="text-gray-400 text-xs mt-1 leading-relaxed">The 7,000 UGX bonus can only be withdrawn after purchasing a package.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Chart Group -->
+        <div class="mt-3">
+          <a href="https://t.me/+kH7QuzE6dp0xZmVk" target="_blank" class="block btn-primary text-center py-4 rounded-2xl font-bold text-sm">
+            📊 Customer Chart Group
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PRODUCTS PAGE ===== -->
+    <div id="page-products" class="page" style="overflow-y:auto; padding-bottom:80px;">
+      <div class="gradient-header px-5 pt-10 pb-5">
+        <h2 class="text-xl font-black text-white">Investment Packages</h2>
+        <p class="text-gray-400 text-xs mt-1">Choose your Samsung investment level</p>
+      </div>
+      <!-- Group Tabs -->
+      <div class="px-4 pt-4 pb-2 flex gap-2 overflow-x-auto" style="scrollbar-width:none;">
+        <button onclick="filterPackages(&#39;all&#39;)" id="grp-all" class="tab-btn active whitespace-nowrap">All</button>
+        <button onclick="filterPackages(1)" id="grp-1" class="tab-btn whitespace-nowrap">Group 1 (60d)</button>
+        <button onclick="filterPackages(2)" id="grp-2" class="tab-btn whitespace-nowrap">Group 2 (180d)</button>
+        <button onclick="filterPackages(3)" id="grp-3" class="tab-btn whitespace-nowrap">Group 3 (210d)</button>
+      </div>
+      <div id="packages-list" class="px-4 py-2"></div>
+    </div>
+
+    <!-- ===== MY PRODUCTS PAGE ===== -->
+    <div id="page-myproducts" class="page" style="overflow-y:auto; padding-bottom:80px;">
+      <div class="gradient-header px-5 pt-10 pb-5">
+        <h2 class="text-xl font-black text-white">My Products</h2>
+        <p class="text-gray-400 text-xs mt-1">Your active &amp; past investments</p>
+      </div>
+      <div id="my-products-list" class="px-4 py-4"></div>
+    </div>
+
+    <!-- ===== TEAM PAGE ===== -->
+    <div id="page-team" class="page" style="overflow-y:auto; padding-bottom:80px;">
+      <div class="gradient-header px-5 pt-10 pb-5">
+        <h2 class="text-xl font-black text-white">My Team</h2>
+        <p class="text-gray-400 text-xs mt-1">Your referral network</p>
+      </div>
+      <div class="px-4 py-4">
+        <div id="team-stats"></div>
+
+        <!-- Referral Info -->
+        <div class="card rounded-xl p-4 mb-4">
+          <p class="text-gray-400 text-xs font-semibold mb-3 uppercase tracking-wider">How Referral Works</p>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between"><span class="text-gray-300">L1 Direct Referral</span><span class="text-green-400 font-bold">30%</span></div>
+            <div class="flex justify-between"><span class="text-gray-300">L2 Team Member</span><span class="text-blue-400 font-bold">2%</span></div>
+            <div class="flex justify-between"><span class="text-gray-300">L3 Team Member</span><span class="text-purple-400 font-bold">1%</span></div>
+          </div>
+        </div>
+
+        <!-- Referral Link -->
+        <div class="card rounded-xl p-4">
+          <p class="text-gray-400 text-xs font-semibold mb-3 uppercase tracking-wider">Your Referral Link</p>
+          <input id="referral-link" type="text" class="input-field text-xs mb-3" readonly=""/>
+          <button onclick="copyReferralLink()" class="btn-primary w-full py-3 rounded-xl text-sm font-bold">📋 Copy Link</button>
+          <button onclick="shareReferralLink()" class="w-full mt-2 border border-blue-700 text-blue-300 font-bold py-3 rounded-xl text-sm hover:bg-blue-950/30 transition-all">📤 Share Link</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MINE PAGE ===== -->
+    <div id="page-mine" class="page" style="overflow-y:auto; padding-bottom:80px;">
+      <div class="gradient-header px-5 pt-10 pb-5">
+        <h2 class="text-xl font-black text-white">Mine</h2>
+      </div>
+      <div class="px-4 py-4">
+        <!-- Profile Card -->
+        <div class="card rounded-2xl p-5 mb-4 flex items-center gap-4">
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-700 to-blue-400 flex items-center justify-center text-2xl font-black text-white">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div>
+            <div id="mine-username" class="text-white font-bold text-lg">User</div>
+            <div id="mine-phone" class="text-gray-400 text-sm">—</div>
+            <div class="mt-1"><span class="text-xs text-gray-400">Balance: </span><span id="mine-wallet-display" class="text-green-400 font-bold text-sm">0 UGX</span></div>
+          </div>
+        </div>
+
+        <!-- Daily Check-In -->
+        <div class="card rounded-2xl p-5 mb-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-white font-bold">Daily Check-In</p>
+              <p class="text-gray-400 text-xs mt-1">Get +100 UGX every 24 hours</p>
+            </div>
+            <button onclick="doCheckIn()" class="btn-primary px-6 py-3 rounded-xl text-sm font-bold">Check In</button>
+          </div>
+        </div>
+
+        <!-- Redeem Gift -->
+        <div class="card rounded-2xl p-5 mb-4">
+          <p class="text-white font-bold mb-1">Redeem Gift</p>
+          <p class="text-gray-400 text-xs mb-3">Enter a gift code when admin opens the window</p>
+          <div id="redeem-status-bar" class="text-xs text-red-400 font-semibold mb-3">Redeem window: CLOSED</div>
+          <div class="flex gap-2">
+            <input id="gift-code-input" type="text" placeholder="Enter gift code" class="input-field flex-1"/>
+            <button onclick="submitGiftCodeUI()" class="btn-primary px-5 py-3 rounded-xl text-sm font-bold">Submit</button>
+          </div>
+        </div>
+
+        <!-- Menu Items -->
+        <div class="space-y-3">
+          <button onclick="showAddWallet()" class="card w-full rounded-xl p-4 flex items-center gap-3 hover:border-blue-500 transition-all text-left">
+            <div class="w-10 h-10 rounded-xl bg-blue-900/50 flex items-center justify-center"><i class="fa-solid fa-wallet text-blue-400"></i></div>
+            <div><div class="text-white font-semibold text-sm">Add Wallet</div><div class="text-gray-400 text-xs">MTN or Airtel Money</div></div>
+            <i class="fa-solid fa-chevron-right text-gray-600 ml-auto"></i>
+          </button>
+          <button onclick="showPage(&#39;myproducts&#39;)" class="card w-full rounded-xl p-4 flex items-center gap-3 hover:border-blue-500 transition-all text-left">
+            <div class="w-10 h-10 rounded-xl bg-purple-900/50 flex items-center justify-center"><i class="fa-solid fa-mobile-screen text-purple-400"></i></div>
+            <div><div class="text-white font-semibold text-sm">My Products</div><div class="text-gray-400 text-xs">View active packages</div></div>
+            <i class="fa-solid fa-chevron-right text-gray-600 ml-auto"></i>
+          </button>
+          <a href="https://t.me/+adk1usHyKF4yYzQ0" target="_blank" class="card w-full rounded-xl p-4 flex items-center gap-3 hover:border-blue-500 transition-all">
+            <div class="w-10 h-10 rounded-xl bg-teal-900/50 flex items-center justify-center"><i class="fab fa-telegram text-teal-400"></i></div>
+            <div><div class="text-white font-semibold text-sm">Customer Support</div><div class="text-gray-400 text-xs">Join Telegram group</div></div>
+            <i class="fa-solid fa-chevron-right text-gray-600 ml-auto"></i>
+          </a>
+          <button onclick="showRulesModal()" class="card w-full rounded-xl p-4 flex items-center gap-3 hover:border-blue-500 transition-all text-left">
+            <div class="w-10 h-10 rounded-xl bg-yellow-900/50 flex items-center justify-center"><i class="fa-solid fa-book-open text-yellow-400"></i></div>
+            <div><div class="text-white font-semibold text-sm">Platform Rules</div><div class="text-gray-400 text-xs">How it works</div></div>
+            <i class="fa-solid fa-chevron-right text-gray-600 ml-auto"></i>
+          </button>
+          <button onclick="doLogout()" class="card w-full rounded-xl p-4 flex items-center gap-3 hover:border-red-800 transition-all text-left">
+            <div class="w-10 h-10 rounded-xl bg-red-900/50 flex items-center justify-center"><i class="fa-solid fa-right-from-bracket text-red-400"></i></div>
+            <div><div class="text-red-400 font-semibold text-sm">Logout</div></div>
+            <i class="fa-solid fa-chevron-right text-gray-600 ml-auto"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== WITHDRAW PAGE ===== -->
+    <div id="page-withdraw" class="page" style="overflow-y:auto; padding-bottom:80px;">
+      <div class="gradient-header px-5 pt-10 pb-5">
+        <h2 class="text-xl font-black text-white">Withdraw</h2>
+        <p class="text-gray-400 text-xs mt-1">Min: 7,000 UGX • Tax: 18% • Max 2/day</p>
+      </div>
+      <div class="px-4 py-4">
+        <!-- Balance -->
+        <div class="stat-card rounded-2xl p-5 mb-5 text-center">
+          <p class="text-gray-400 text-xs font-semibold uppercase tracking-wider">Available Balance</p>
+          <p id="stat-wallet" class="text-white text-3xl font-black mt-2">0 UGX</p>
+        </div>
+
+        <!-- New user lock banner -->
+        <div id="wd-lock-banner" style="display:none;" class="bg-yellow-900/30 border border-yellow-600/40 rounded-xl p-4 mb-4 flex items-start gap-3">
+          <span class="text-yellow-400 text-xl mt-0.5">🔒</span>
+          <div>
+            <p class="text-yellow-400 text-sm font-bold">Withdrawals Locked</p>
+            <p class="text-gray-300 text-xs mt-1 leading-relaxed">Your 7,000 UGX bonus and all earnings are locked until you purchase your first investment package.</p>
+            <button onclick="showPage(&#39;products&#39;)" class="mt-2 btn-primary text-xs px-4 py-2 rounded-lg font-bold">Buy a Package Now</button>
+          </div>
+        </div>
+
+        <!-- Wallet Select -->
+        <div class="mb-4">
+          <label class="text-xs text-gray-400 font-semibold mb-2 block">Select Wallet</label>
+          <div id="wd-wallet-info" class="card rounded-xl p-4 text-sm">
+            <span class="text-gray-400">No wallet added yet. </span><button onclick="showAddWallet()" class="text-blue-400 underline">Add Wallet</button>
+          </div>
+        </div>
+        <!-- Amount -->
+        <div class="mb-4">
+          <label class="text-xs text-gray-400 font-semibold mb-2 block">Amount (UGX)</label>
+          <input id="wd-amount" type="number" placeholder="Enter amount" class="input-field" min="7000"/>
+        </div>
+        <!-- Tax Preview -->
+        <div class="bg-blue-950/30 rounded-xl p-4 mb-5 text-sm">
+          <div class="flex justify-between text-gray-400 mb-1"><span>Amount</span><span id="wd-preview-amount">0 UGX</span></div>
+          <div class="flex justify-between text-red-400 mb-1"><span>Tax (18%)</span><span id="wd-preview-tax">0 UGX</span></div>
+          <div class="flex justify-between text-green-400 font-bold border-t border-blue-900/30 pt-2 mt-2"><span>You Receive</span><span id="wd-preview-net">0 UGX</span></div>
+        </div>
+        <button onclick="doWithdraw()" class="btn-primary w-full py-4 rounded-2xl text-base font-bold mb-6">Withdraw Now</button>
+
+        <!-- History -->
+        <h3 class="text-white font-bold text-sm mb-3">Withdrawal History</h3>
+        <div id="wd-history-list"></div>
+      </div>
+    </div>
+
+    <!-- ===== ADMIN PAGE ===== -->
+    <div id="page-admin" class="page" style="overflow-y:auto; padding-bottom:80px;">
+      <div style="background:linear-gradient(135deg,#4a0505,#1a0000)" class="px-5 pt-10 pb-5 flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-black text-white">Admin Panel</h2>
+          <p class="text-red-400 text-xs mt-1">Full Control Dashboard</p>
+        </div>
+        <button onclick="showPage(&#39;home&#39;)" class="text-gray-400 hover:text-white text-xs border border-red-900 px-3 py-2 rounded-lg">Exit</button>
+      </div>
+      <!-- Admin Tabs -->
+      <div class="px-4 pt-3 pb-2 flex gap-2 overflow-x-auto" style="scrollbar-width:none;">
+        <button onclick="switchAdminTab(&#39;payments&#39;)" id="atab-payments" class="admin-tab active" style="background:#1428A0;color:#fff;">Payments</button>
+        <button onclick="switchAdminTab(&#39;withdrawals&#39;)" id="atab-withdrawals" class="admin-tab" style="background:rgba(20,40,160,0.2);color:#94a3b8;">Withdrawals</button>
+        <button onclick="switchAdminTab(&#39;redeem&#39;)" id="atab-redeem" class="admin-tab" style="background:rgba(20,40,160,0.2);color:#94a3b8;">Redeem</button>
+        <button onclick="switchAdminTab(&#39;packages&#39;)" id="atab-packages" class="admin-tab" style="background:rgba(20,40,160,0.2);color:#94a3b8;">Packages</button>
+        <button onclick="switchAdminTab(&#39;users&#39;)" id="atab-users" class="admin-tab" style="background:rgba(20,40,160,0.2);color:#94a3b8;">Users</button>
+      </div>
+      <div class="px-4 py-3">
+        <!-- Payments Tab -->
+        <div id="admin-tab-payments">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-white font-bold text-sm">Pending Payments</h3>
+            <button onclick="renderAdminPayments()" class="text-xs text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg">Refresh</button>
+          </div>
+          <div id="admin-payments-list"><div class="text-center py-4 text-gray-400 text-sm">Loading...</div></div>
+        </div>
+        <!-- Withdrawals Tab -->
+        <div id="admin-tab-withdrawals" style="display:none;">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-white font-bold text-sm">Pending Withdrawals</h3>
+            <button onclick="renderAdminWithdrawals()" class="text-xs text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg">Refresh</button>
+          </div>
+          <div id="admin-wd-list"><div class="text-center py-4 text-gray-400 text-sm">Loading...</div></div>
+        </div>
+        <!-- Redeem Tab -->
+        <div id="admin-tab-redeem" style="display:none;">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-white font-bold text-sm">Redeem Gift Control</h3>
+            <button onclick="adminOpenRedeem()" class="text-xs bg-green-700 text-white px-3 py-1.5 rounded-lg font-bold">Open 15min</button>
+          </div>
+          <div id="admin-redeem-list"></div>
+        </div>
+        <!-- Packages Tab -->
+        <div id="admin-tab-packages" style="display:none;">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-white font-bold text-sm">All Packages</h3>
+            <button onclick="renderAdminPackages()" class="text-xs text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg">Refresh</button>
+          </div>
+          <div id="admin-packages-list"></div>
+        </div>
+        <!-- Users Tab -->
+        <div id="admin-tab-users" style="display:none;">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-white font-bold text-sm">All Users</h3>
+            <button onclick="renderAdminUsers()" class="text-xs text-blue-400 border border-blue-800 px-3 py-1.5 rounded-lg">Refresh</button>
+          </div>
+          <div id="admin-users-list"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <div style="background:#060f2a; border-top:1px solid rgba(20,40,160,0.4); display:flex; position:sticky; bottom:0; z-index:100; padding-bottom:env(safe-area-inset-bottom,0);">
+    <button class="nav-btn active" data-page="home" onclick="showPage(&#39;home&#39;)">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </button>
+    <button class="nav-btn" data-page="products" onclick="showPage(&#39;products&#39;)">
+      <i class="fa-solid fa-store"></i>
+      <span>Products</span>
+    </button>
+    <button class="nav-btn" data-page="team" onclick="showPage(&#39;team&#39;)">
+      <i class="fa-solid fa-users"></i>
+      <span>Team</span>
+    </button>
+    <button class="nav-btn" data-page="mine" onclick="showPage(&#39;mine&#39;)">
+      <i class="fa-solid fa-user"></i>
+      <span>Mine</span>
+    </button>
+    <button class="nav-btn" data-page="withdraw" onclick="showPage(&#39;withdraw&#39;)">
+      <i class="fa-solid fa-money-bill-wave"></i>
+      <span>Withdraw</span>
+    </button>
+  </div>
+</div>
+
+<!-- ============ MODALS ============ -->
+
+<!-- Welcome Modal -->
+<div id="modal-welcome" class="modal-overlay" style="display:none;">
+  <div class="modal-box text-center">
+    <div class="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </div>
+    <h2 class="text-2xl font-black text-white mb-2">Welcome to</h2>
+    <h3 class="text-xl font-black text-blue-400 mb-4">SAMSUNG EARNING PLATFORM</h3>
+    <div class="bg-green-900/30 border border-green-700/40 rounded-xl p-4 mb-4">
+      <p class="text-green-400 font-bold text-lg">+7,000 UGX</p>
+      <p class="text-gray-400 text-sm">New user bonus added to your wallet!</p>
+      <p class="text-gray-500 text-xs mt-1">Buy a package first to withdraw</p>
+    </div>
+    <button onclick="hideModal(&#39;modal-welcome&#39;); showModal(&#39;modal-rules&#39;);" class="btn-primary w-full py-4 rounded-2xl font-bold text-lg">OK</button>
+  </div>
+</div>
+
+<!-- Rules Modal -->
+<div id="modal-rules" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h2 class="text-xl font-black text-white mb-4">Platform Rules</h2>
+    <div class="space-y-4 text-sm">
+      <div class="card rounded-xl p-4">
+        <p class="text-blue-400 font-bold mb-1">1. Daily Bonus</p>
+        <p class="text-gray-300">Check in daily to get +100 UGX automatically on Mine page.</p>
+      </div>
+      <div class="card rounded-xl p-4">
+        <p class="text-blue-400 font-bold mb-1">2. Referral Earnings</p>
+        <p class="text-gray-300">L1 Direct: <span class="text-green-400 font-bold">30%</span> unlimited<br/>L2: <span class="text-blue-400 font-bold">2%</span> on L1 investments<br/>L3: <span class="text-purple-400 font-bold">1%</span> on L2 investments</p>
+        <p class="text-gray-400 text-xs mt-1">Paid instantly after package purchase.</p>
+      </div>
+      <div class="card rounded-xl p-4">
+        <p class="text-blue-400 font-bold mb-1">3. Investment Packages</p>
+        <p class="text-gray-300">Group 1: 60 days | Group 2: 180 days | Group 3: 210 days</p>
+      </div>
+      <div class="card rounded-xl p-4">
+        <p class="text-blue-400 font-bold mb-1">4. Withdrawal</p>
+        <p class="text-gray-300">Min: 7,000 UGX • Tax: 18% • Max 2x/day • 2-24 hours processing</p>
+      </div>
+      <div class="card rounded-xl p-4">
+        <p class="text-blue-400 font-bold mb-1">5. General</p>
+        <p class="text-gray-300">1 account per person. Fake payments or referrals = permanent ban.</p>
+      </div>
+    </div>
+    <button onclick="hideModal(&#39;modal-rules&#39;)" class="btn-primary w-full py-4 rounded-2xl font-bold text-base mt-5">OK, I Understand</button>
+  </div>
+</div>
+
+<!-- Add Wallet Modal -->
+<div id="modal-addwallet" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h2 class="text-xl font-black text-white mb-5">Add Wallet</h2>
+    <div class="mb-4">
+      <label class="text-xs text-gray-400 font-semibold mb-2 block">Network</label>
+      <div class="flex gap-3">
+        <button onclick="selectNetwork(&#39;MTN&#39;)" id="net-mtn" class="flex-1 py-3 rounded-xl border-2 border-blue-700 text-white font-bold text-sm transition-all" style="background:rgba(255,176,0,0.1); border-color:#FFB000;">
+          🟡 MTN Money
+        </button>
+        <button onclick="selectNetwork(&#39;Airtel&#39;)" id="net-airtel" class="flex-1 py-3 rounded-xl border border-blue-800 text-gray-300 font-bold text-sm transition-all">
+          🔴 Airtel Money
+        </button>
+      </div>
+      <input type="hidden" id="wallet-network" value="MTN"/>
+    </div>
+    <div class="mb-4">
+      <label class="text-xs text-gray-400 font-semibold mb-2 block">Full Name</label>
+      <input id="wallet-name" type="text" placeholder="Your registered name" class="input-field"/>
+    </div>
+    <div class="mb-5">
+      <label class="text-xs text-gray-400 font-semibold mb-2 block">Phone Number</label>
+      <input id="wallet-phone" type="tel" placeholder="07XXXXXXXX" class="input-field"/>
+    </div>
+    <button onclick="doSaveWallet()" class="btn-primary w-full py-4 rounded-2xl font-bold text-base mb-3">Save Wallet</button>
+    <button onclick="hideModal(&#39;modal-addwallet&#39;)" class="w-full py-3 text-gray-400 text-sm">Cancel</button>
+  </div>
+</div>
+
+<!-- Buy Package Modal -->
+<div id="modal-buy" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h2 class="text-xl font-black text-white mb-1" id="buy-pkg-name">Galaxy A05</h2>
+    <p class="text-gray-400 text-sm mb-4" id="buy-pkg-details">15,000 UGX • 3,000/day • 60 days</p>
+
+    <div id="buy-step-1">
+      <p class="text-white font-semibold text-sm mb-3">Select Payment Method</p>
+      <div class="flex gap-3 mb-4">
+        <button onclick="selectPayMethod(&#39;MTN&#39;)" id="pay-mtn" class="flex-1 py-3 rounded-xl font-bold text-sm" style="background:rgba(255,176,0,0.15); border:2px solid #FFB000; color:#FFB000;">
+          🟡 MTN
+        </button>
+        <button onclick="selectPayMethod(&#39;Airtel&#39;)" id="pay-airtel" class="flex-1 py-3 rounded-xl border border-blue-800 text-gray-300 font-bold text-sm">
+          🔴 Airtel
+        </button>
+      </div>
+      <input type="hidden" id="selected-pay-method" value="MTN"/>
+      <label class="text-xs text-gray-400 font-semibold mb-2 block">Phone Number You Will Pay From</label>
+      <input id="pay-phone-input" type="tel" placeholder="07XXXXXXXX" class="input-field mb-5"/>
+      <button onclick="proceedToPay()" class="btn-primary w-full py-4 rounded-2xl font-bold text-base mb-3">Submit Payment Number</button>
+      <button onclick="hideModal(&#39;modal-buy&#39;)" class="w-full py-3 text-gray-400 text-sm">Cancel</button>
+    </div>
+
+    <div id="buy-step-2" style="display:none;">
+      <div class="bg-green-900/30 border border-green-700/40 rounded-2xl p-5 mb-4 text-center">
+        <p class="text-gray-400 text-xs font-semibold mb-1">PAY TO THIS NUMBER</p>
+        <div id="company-number" class="text-white text-2xl font-black mb-1"></div>
+        <div id="company-name" class="text-green-400 text-sm font-semibold mb-3"></div>
+        <div class="bg-red-900/30 border border-red-700/40 rounded-xl p-3">
+          <p class="text-red-400 text-xs font-bold">⏱ TIME REMAINING</p>
+          <div id="payment-timer" class="text-white text-3xl font-black mt-1">15:00</div>
+          <p class="text-gray-400 text-xs mt-1">Number disappears after timer ends</p>
+        </div>
+      </div>
+      <div class="bg-blue-950/40 rounded-xl p-4 mb-4 text-sm text-gray-300 leading-relaxed">
+        <p>1. Pay the <strong class="text-white">exact amount</strong> shown above</p>
+        <p class="mt-1">2. Use the <strong class="text-white">phone number you submitted</strong></p>
+        <p class="mt-1">3. <strong class="text-white">Wait for admin approval</strong> (no upload needed)</p>
+      </div>
+      <button onclick="hideModal(&#39;modal-buy&#39;); clearPaymentTimer();" class="btn-primary w-full py-4 rounded-2xl font-bold text-base mb-3">Done, I&#39;ve Paid</button>
+      <button onclick="hideModal(&#39;modal-buy&#39;); clearPaymentTimer();" class="w-full py-3 text-gray-400 text-sm">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Login Modal -->
+<div id="modal-admin-login" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h2 class="text-xl font-black text-white mb-5">Admin Login</h2>
+    <div class="mb-4">
+      <label class="text-xs text-gray-400 font-semibold mb-2 block">Admin Name</label>
+      <input id="admin-login-name" type="text" placeholder="Name" class="input-field"/>
+    </div>
+    <div class="mb-5">
+      <label class="text-xs text-gray-400 font-semibold mb-2 block">Password</label>
+      <input id="admin-login-pass" type="password" placeholder="Password" class="input-field"/>
+    </div>
+    <button onclick="verifyAdminLogin()" class="btn-primary w-full py-4 rounded-2xl font-bold text-base mb-3">Login</button>
+    <button onclick="hideModal(&#39;modal-admin-login&#39;)" class="w-full py-3 text-gray-400 text-sm">Cancel</button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+
+  // ============ PACKAGE RENDERING ============
+  let currentGroup = 'all';
+  window.filterPackages = function(group){
+    currentGroup = group;
+    document.querySelectorAll('[id^="grp-"]').forEach(b=>b.classList.remove('active'));
+    const bid = group==='all'?'grp-all':'grp-'+group;
+    const b = document.getElementById(bid);
+    if(b) b.classList.add('active');
+    renderPackages();
+  };
+
+  window.renderPackages = function(){
+    const cont = document.getElementById('packages-list');
+    if(!cont) return;
+    const list = currentGroup==='all' ? window.PACKAGES : window.PACKAGES.filter(p=>p.group===currentGroup);
+    let html = '';
+    list.forEach(pkg=>{
+      const grpLabel = ['','Group 1','Group 2','Group 3'][pkg.group];
+      const grpClass = ['','group-1','group-2','group-3'][pkg.group];
+      const roi = Math.round(pkg.daily * pkg.days);
+      html += `
+      <div class="package-card mb-4">
+        <div class="flex items-center gap-4 p-4">
+          <img src="${pkg.img}" alt="${pkg.name}" class="w-20 h-20 object-contain rounded-xl bg-blue-950/50" loading="lazy" onerror="this.src='https://placehold.co/80x80/1428A0/white?text=Samsung'" />
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-black text-white text-base">${pkg.name}</span>
+              <span class="group-badge ${grpClass}">${grpLabel}</span>
+            </div>
+            <div class="text-gray-400 text-xs">${pkg.days} days duration</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-0 border-t border-blue-900/30 text-center">
+          <div class="p-3 border-r border-blue-900/30">
+            <div class="text-gray-400 text-xs">Price</div>
+            <div class="text-white font-bold text-sm mt-0.5">${window.fmtUGX(pkg.price)}</div>
+          </div>
+          <div class="p-3 border-r border-blue-900/30">
+            <div class="text-gray-400 text-xs">Daily</div>
+            <div class="text-green-400 font-bold text-sm mt-0.5">${window.fmtUGX(pkg.daily)}</div>
+          </div>
+          <div class="p-3">
+            <div class="text-gray-400 text-xs">Total ROI</div>
+            <div class="text-blue-400 font-bold text-sm mt-0.5">${window.fmtUGX(roi)}</div>
+          </div>
+        </div>
+        <div class="p-4 pt-3">
+          <button onclick="openBuyModal('${pkg.id}')" class="btn-primary w-full py-3 rounded-xl text-sm font-bold">Buy Now</button>
+        </div>
+      </div>`;
+    });
+    cont.innerHTML = html;
+  };
+
+  // ============ BUY FLOW ============
+  window._currentBuyPkg = null;
+  window._paymentTimerInterval = null;
+
+  window.openBuyModal = function(pkgId){
+    const pkg = window.PACKAGES.find(p=>p.id===pkgId);
+    if(!pkg) return;
+    window._currentBuyPkg = pkg;
+    document.getElementById('buy-pkg-name').textContent = pkg.name;
+    document.getElementById('buy-pkg-details').textContent = `${window.fmtUGX(pkg.price)} • ${window.fmtUGX(pkg.daily)}/day • ${pkg.days} days`;
+    document.getElementById('buy-step-1').style.display = 'block';
+    document.getElementById('buy-step-2').style.display = 'none';
+    document.getElementById('pay-phone-input').value = '';
+    selectPayMethod('MTN');
+    showModal('modal-buy');
+  };
+
+  window.selectPayMethod = function(method){
+    document.getElementById('selected-pay-method').value = method;
+    const mtn = document.getElementById('pay-mtn');
+    const airtel = document.getElementById('pay-airtel');
+    if(method==='MTN'){
+      mtn.style.cssText = 'background:rgba(255,176,0,0.15);border:2px solid #FFB000;color:#FFB000;border-radius:12px;flex:1;padding:12px;font-weight:700;font-size:14px;';
+      airtel.style.cssText = 'background:rgba(20,40,160,0.12);border:1px solid rgba(29,106,245,0.3);color:#94a3b8;border-radius:12px;flex:1;padding:12px;font-weight:700;font-size:14px;';
+    } else {
+      airtel.style.cssText = 'background:rgba(220,38,38,0.15);border:2px solid #ef4444;color:#ef4444;border-radius:12px;flex:1;padding:12px;font-weight:700;font-size:14px;';
+      mtn.style.cssText = 'background:rgba(20,40,160,0.12);border:1px solid rgba(29,106,245,0.3);color:#94a3b8;border-radius:12px;flex:1;padding:12px;font-weight:700;font-size:14px;';
+    }
+  };
+
+  window.proceedToPay = async function(){
+    const method = document.getElementById('selected-pay-method').value;
+    const phone = document.getElementById('pay-phone-input').value.trim();
+    if(!phone){ showToast('Enter your payment phone number'); return; }
+    const pkg = window._currentBuyPkg;
+    if(!pkg) return;
+    showLoader(true);
+    try{
+      const result = await window.submitPayment(pkg.id, method, phone);
+      showLoader(false);
+      if(!result) return;
+      document.getElementById('buy-step-1').style.display = 'none';
+      document.getElementById('buy-step-2').style.display = 'block';
+      if(method==='MTN'){
+        document.getElementById('company-number').textContent = '0756406186';
+        document.getElementById('company-name').textContent = 'Nabakooza Milly (MTN)';
+      } else {
+        document.getElementById('company-number').textContent = '0782031407';
+        document.getElementById('company-name').textContent = 'Kyosiimire Joan (Airtel)';
+      }
+      startPaymentTimer(result.expires);
+    } catch(e){
+      showLoader(false);
+      showToast('Error: '+e.message);
+    }
+  };
+
+  window.startPaymentTimer = function(expiresAt){
+    clearPaymentTimer();
+    const timerEl = document.getElementById('payment-timer');
+    window._paymentTimerInterval = setInterval(()=>{
+      const secsLeft = Math.max(0, Math.ceil((expiresAt - Date.now())/1000));
+      const m = Math.floor(secsLeft/60), s = secsLeft%60;
+      if(timerEl) timerEl.textContent = m+':'+String(s).padStart(2,'0');
+      if(secsLeft <= 0){
+        clearPaymentTimer();
+        if(timerEl) timerEl.textContent = 'EXPIRED';
+        showToast('Payment window expired. Please buy again.');
+        setTimeout(()=>hideModal('modal-buy'), 2000);
+      }
+    }, 1000);
+  };
+
+  window.clearPaymentTimer = function(){
+    if(window._paymentTimerInterval){ clearInterval(window._paymentTimerInterval); window._paymentTimerInterval = null; }
+  };
+
+  // ============ WALLET ============
+  window.showAddWallet = function(){
+    const d = window._userData;
+    if(d){
+      if(d.walletPhone) document.getElementById('wallet-phone').value = d.walletPhone;
+      if(d.walletName) document.getElementById('wallet-name').value = d.walletName;
+      if(d.walletType) selectNetwork(d.walletType);
+    }
+    showModal('modal-addwallet');
+  };
+
+  window.selectNetwork = function(net){
+    document.getElementById('wallet-network').value = net;
+    const mtn = document.getElementById('net-mtn');
+    const airtel = document.getElementById('net-airtel');
+    if(net==='MTN'){
+      mtn.style.cssText='flex:1;padding:12px;border-radius:12px;font-weight:700;font-size:14px;background:rgba(255,176,0,0.15);border:2px solid #FFB000;color:#FFB000;';
+      airtel.style.cssText='flex:1;padding:12px;border-radius:12px;font-weight:700;font-size:14px;background:rgba(20,40,160,0.12);border:1px solid rgba(29,106,245,0.3);color:#94a3b8;';
+    } else {
+      airtel.style.cssText='flex:1;padding:12px;border-radius:12px;font-weight:700;font-size:14px;background:rgba(220,38,38,0.15);border:2px solid #ef4444;color:#ef4444;';
+      mtn.style.cssText='flex:1;padding:12px;border-radius:12px;font-weight:700;font-size:14px;background:rgba(20,40,160,0.12);border:1px solid rgba(29,106,245,0.3);color:#94a3b8;';
+    }
+  };
+
+  window.doSaveWallet = async function(){
+    const type = document.getElementById('wallet-network').value;
+    const name = document.getElementById('wallet-name').value.trim();
+    const phone = document.getElementById('wallet-phone').value.trim();
+    if(!name||!phone){ showToast('Fill all wallet fields'); return; }
+    showLoader(true);
+    await saveWallet(type, name, phone);
+    showLoader(false);
+    hideModal('modal-addwallet');
+    populateWalletWithdraw();
+  };
+
+  window.populateWalletWithdraw = function(){
+    const d = window._userData;
+    const el = document.getElementById('wd-wallet-info');
+    const banner = document.getElementById('wd-lock-banner');
+    if(!el) return;
+    // Show/hide lock banner for users who haven't purchased yet
+    if(banner){
+      banner.style.display = (!d || !d.hasPurchased) ? 'flex' : 'none';
+    }
+    if(d && d.walletPhone){
+      el.innerHTML = `<div class="flex items-center gap-3"><div class="text-lg">${d.walletType==='MTN'?'🟡':'🔴'}</div><div><div class="text-white font-bold text-sm">${d.walletType}: ${d.walletPhone}</div><div class="text-gray-400 text-xs">${d.walletName||''}</div></div></div>`;
+    } else {
+      el.innerHTML = '<span class="text-gray-400">No wallet added yet. </span><button onclick="showAddWallet()" class="text-blue-400 underline">Add Wallet</button>';
+    }
+  };
+
+  // ============ WITHDRAW ============
+  document.getElementById('wd-amount')?.addEventListener('input', function(){
+    const amt = parseFloat(this.value)||0;
+    const tax = Math.round(amt*0.18);
+    const net = Math.round(amt*0.82);
+    document.getElementById('wd-preview-amount').textContent = window.fmtUGX(amt);
+    document.getElementById('wd-preview-tax').textContent = window.fmtUGX(tax);
+    document.getElementById('wd-preview-net').textContent = window.fmtUGX(net);
+  });
+
+  window.doWithdraw = async function(){
+    const amt = parseFloat(document.getElementById('wd-amount').value)||0;
+    if(!amt){ showToast('Enter amount'); return; }
+    showLoader(true);
+    const ok = await requestWithdrawal(amt);
+    showLoader(false);
+    if(ok){
+      document.getElementById('wd-amount').value = '';
+      document.getElementById('wd-preview-amount').textContent = '0 UGX';
+      document.getElementById('wd-preview-tax').textContent = '0 UGX';
+      document.getElementById('wd-preview-net').textContent = '0 UGX';
+      renderWithdrawalHistory();
+    }
+  };
+
+  // ============ REFERRAL ============
+  window.copyReferralLink = function(){
+    const el = document.getElementById('referral-link');
+    if(!el) return;
+    navigator.clipboard.writeText(el.value).then(()=>showToast('Link copied!')).catch(()=>{ el.select(); document.execCommand('copy'); showToast('Link copied!'); });
+  };
+
+  window.shareReferralLink = function(){
+    const el = document.getElementById('referral-link');
+    if(!el) return;
+    if(navigator.share){
+      navigator.share({ title:'Samsung Earning Platform', text:'Join and earn daily!', url:el.value }).catch(()=>{});
+    } else {
+      copyReferralLink();
+    }
+  };
+
+  // ============ MINE / REDEEM ============
+  window.submitGiftCodeUI = async function(){
+    const code = document.getElementById('gift-code-input').value.trim();
+    if(!code){ showToast('Enter a gift code'); return; }
+    showLoader(true);
+    await submitGiftCode(code);
+    showLoader(false);
+    document.getElementById('gift-code-input').value = '';
+  };
+
+  window.renderMineRedeemStatus = async function(){
+    const el = document.getElementById('redeem-status-bar');
+    if(!el) return;
+    const FB = window._FB;
+    if(!FB) return;
+    try{
+      const snap = await FB.get(FB.ref(FB.db,'redeemWindow'));
+      const now = Date.now();
+      if(snap.exists() && snap.val().active && now < snap.val().expiresAt){
+        const secsLeft = Math.ceil((snap.val().expiresAt - now)/1000);
+        el.className = 'text-xs text-green-400 font-semibold mb-3';
+        el.textContent = `Redeem window: OPEN — ${Math.floor(secsLeft/60)}:${String(secsLeft%60).padStart(2,'0')}`;
+      } else {
+        el.className = 'text-xs text-red-400 font-semibold mb-3';
+        el.textContent = 'Redeem window: CLOSED';
+      }
+    } catch(e){}
+  };
+
+  // ============ WELCOME & RULES ============
+  window.showWelcomePopup = function(){
+    showModal('modal-welcome');
+  };
+
+  window.showRulesModal = function(){
+    showModal('modal-rules');
+  };
+
+  // ============ ADMIN ============
+  window.showAdminLogin = function(){
+    showModal('modal-admin-login');
+  };
+
+  window.verifyAdminLogin = function(){
+    const name = document.getElementById('admin-login-name').value.trim();
+    const pass = document.getElementById('admin-login-pass').value.trim();
+    if(name==='Nabakooza' && pass==='nabakooza123'){
+      hideModal('modal-admin-login');
+      document.getElementById('admin-login-name').value='';
+      document.getElementById('admin-login-pass').value='';
+      showPage('admin');
+      switchAdminTab('payments');
+      renderAdminPayments();
+    } else {
+      showToast('Invalid admin credentials');
+    }
+  };
+
+  window.switchAdminTab = function(tab){
+    ['payments','withdrawals','redeem','packages','users'].forEach(t=>{
+      const el = document.getElementById('admin-tab-'+t);
+      const btn = document.getElementById('atab-'+t);
+      if(el) el.style.display = t===tab?'block':'none';
+      if(btn){
+        if(t===tab){ btn.style.background='#1428A0'; btn.style.color='#fff'; }
+        else{ btn.style.background='rgba(20,40,160,0.2)'; btn.style.color='#94a3b8'; }
+      }
+    });
+    if(tab==='payments') renderAdminPayments();
+    else if(tab==='withdrawals') renderAdminWithdrawals();
+    else if(tab==='redeem') renderAdminRedeem();
+    else if(tab==='packages') renderAdminPackages();
+    else if(tab==='users') renderAdminUsers();
+  };
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(m=>{
+    m.addEventListener('click', function(e){
+      if(e.target===m && m.id !== 'modal-welcome' && m.id !== 'modal-rules'){
+        m.style.display='none';
+        clearPaymentTimer();
+      }
+    });
+  });
+
+  // Admin login on Enter
+  document.getElementById('admin-login-pass')?.addEventListener('keydown',function(e){
+    if(e.key==='Enter') verifyAdminLogin();
+  });
+});
+</script>
+
+
+
+</body></html>
